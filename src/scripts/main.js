@@ -2,22 +2,19 @@ import Game from '../modules/Game.class.js';
 
 const game = new Game();
 
-document.querySelector('.start').addEventListener('click', () => {
-  game.start();
-});
-
 const cells = document.querySelectorAll('.field-cell');
-const startButton = document.querySelector('.button');
+const startButton = document.querySelector('.start');
 const scoreElement = document.querySelector('.game-score');
 const winMessage = document.querySelector('.message-win');
 const loseMessage = document.querySelector('.message-lose');
 const startMessage = document.querySelector('.message-start');
 
-const startBtn = document.querySelector('.start');
-
-startBtn.addEventListener('click', () => {
-  game.start();
-  updateUI();
+startButton.addEventListener('click', () => {
+  if (game.getStatus() === 'idle') {
+    startGame();
+  } else {
+    restartGame();
+  }
 });
 
 function updateUI() {
@@ -33,22 +30,16 @@ function updateUI() {
 
     if (value) {
       cell.classList.add(`field-cell--${value}`);
+
+      cell.classList.add('field-cell--merged');
+      setTimeout(() => cell.classList.remove('field-cell--merged'), 150);
     }
   });
 
   scoreElement.textContent = game.getScore();
 
-  if (game.getStatus() === 'win') {
-    winMessage.classList.remove('hidden');
-  } else {
-    winMessage.classList.add('hidden');
-  }
-
-  if (game.getStatus() === 'lose') {
-    loseMessage.classList.remove('hidden');
-  } else {
-    loseMessage.classList.add('hidden');
-  }
+  winMessage.classList.toggle('hidden', game.getStatus() !== 'win');
+  loseMessage.classList.toggle('hidden', game.getStatus() !== 'lose');
 }
 
 function startGame() {
@@ -67,14 +58,6 @@ function restartGame() {
   loseMessage.classList.add('hidden');
   updateUI();
 }
-
-startButton.addEventListener('click', () => {
-  if (game.getStatus() === 'idle') {
-    startGame();
-  } else {
-    restartGame();
-  }
-});
 
 document.addEventListener('keydown', (e) => {
   const key = e.key;
